@@ -73,6 +73,7 @@ func (info *DownstreamInfo) Parse(row []string) error {
 		return errors.Wrap(err, "parse channel ID")
 	}
 
+        logrus.WithField("row", row).WithField("val", getField(frequencyField)).Info("parsing")
 	info.Frequency, err = strconv.ParseFloat(getField(frequencyField), 64)
 	if err != nil {
 		return errors.Wrap(err, "parse frequency")

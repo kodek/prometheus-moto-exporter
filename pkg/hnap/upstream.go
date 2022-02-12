@@ -3,6 +3,7 @@ package hnap
 import (
 	"encoding/json"
 	"strconv"
+        "strings"
 
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -37,9 +38,13 @@ func (info *UpstreamInfo) Parse(row []string) error {
 		return errors.Errorf("invalid data size: expected %d but found %d", dataSize, len(row))
 	}
 
+	getField := func(i int) string {
+		return strings.TrimSpace(row[i])
+	}
+
 	var err error
 
-	info.ID, err = strconv.ParseInt(row[idField], 10, 64)
+	info.ID, err = strconv.ParseInt(getField(idField), 10, 64)
 	if err != nil {
 		return errors.Wrap(err, "parse ID")
 	}
@@ -47,25 +52,25 @@ func (info *UpstreamInfo) Parse(row []string) error {
 	info.LockStatus = row[lockStatusField]
 	info.Modulation = row[modulationField]
 
-	info.Channel, err = strconv.ParseInt(row[channelIDField], 10, 64)
+	info.Channel, err = strconv.ParseInt(getField(channelIDField), 10, 64)
 	if err != nil {
 		return errors.Wrap(err, "parse channel ID")
 	}
 
-	info.SymbolRate, err = strconv.ParseInt(row[symbolRateField], 10, 64)
+	info.SymbolRate, err = strconv.ParseInt(getField(symbolRateField), 10, 64)
 	if err != nil {
 		return errors.Wrap(err, "parse symbol rate")
 	}
 	// ksym -> sym
 	info.SymbolRate *= 1000
 
-	info.Frequency, err = strconv.ParseFloat(row[frequencyField], 64)
+	info.Frequency, err = strconv.ParseFloat(getField(frequencyField), 64)
 	if err != nil {
 		return errors.Wrap(err, "parse frequency")
 	}
 	info.Frequency *= 1000 * 1000 // Mhz -> hz
 
-	info.DecibelMillivolts, err = strconv.ParseFloat(row[dbmvField], 64)
+	info.DecibelMillivolts, err = strconv.ParseFloat(getField(dbmvField), 64)
 	if err != nil {
 		return errors.Wrap(err, "parse dBmV")
 	}
